@@ -1,0 +1,25 @@
+services:
+  postgres:
+    container_name: todo_app_db
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: todo_app_db
+      PGDATA: /var/lib/postgres/data
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - spring-demo
+    restart: unless-stopped
+
+networks:
+  spring-demo:
+    driver: bridge
+
+volumes:
+  postgres:
+    driver: local
+
