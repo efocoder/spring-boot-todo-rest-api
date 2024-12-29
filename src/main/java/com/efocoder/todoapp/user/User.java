@@ -1,6 +1,8 @@
 package com.efocoder.todoapp.user;
 
 import com.efocoder.todoapp.role.Role;
+import com.efocoder.todoapp.shared.StatusConverter;
+import com.efocoder.todoapp.shared.StatusEnum;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -50,6 +52,10 @@ public class User implements UserDetails, Principal {
     @LastModifiedDate
     @Column(insertable = false)
     private LocalDateTime lastModifiedDate;
+
+    @Convert(converter = StatusConverter.class)
+    @Column(name = "status", nullable = false)
+    private StatusEnum status = StatusEnum.ACTIVE;
 
     @ManyToMany(fetch=FetchType.EAGER)
     private List<Role> roles;

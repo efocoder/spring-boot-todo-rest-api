@@ -1,6 +1,5 @@
-package com.efocoder.todoapp.user;
+package com.efocoder.todoapp.role;
 
-import com.efocoder.todoapp.role.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
