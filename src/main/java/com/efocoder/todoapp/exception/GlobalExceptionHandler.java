@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -18,7 +19,17 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(ExceptionResponse.builder()
                         .code(ApiCodes.INVALID_CREDENTIALS.getCode())
-                        .message(ApiCodes.INVALID_CREDENTIALS.getMessage())
+                        .error(ApiCodes.INVALID_CREDENTIALS.getMessage())
+                        .build());
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ExceptionResponse> handleException(HttpRequestMethodNotSupportedException exp){
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ExceptionResponse.builder()
+                        .code(ApiCodes.ROUTE_NOT_FOUND.getCode())
+                        .error(ApiCodes.ROUTE_NOT_FOUND.getMessage())
                         .build());
     }
 

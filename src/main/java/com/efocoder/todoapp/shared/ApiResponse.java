@@ -14,5 +14,6 @@ import java.util.Collection;
 public class ApiResponse {
     private Integer code;
     private String message;
+    private String token;
     private Collection<?> data;
 }
