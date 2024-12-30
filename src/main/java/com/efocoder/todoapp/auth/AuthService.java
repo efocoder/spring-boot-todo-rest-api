@@ -3,6 +3,7 @@ package com.efocoder.todoapp.auth;
 import com.efocoder.todoapp.auth.dto.LoginDto;
 import com.efocoder.todoapp.auth.dto.RegistrationDto;
 import com.efocoder.todoapp.exception.UniqueConstraintViolationException;
+import com.efocoder.todoapp.jwt.JwtResponse;
 import com.efocoder.todoapp.jwt.JwtService;
 import com.efocoder.todoapp.role.RoleRepository;
 import com.efocoder.todoapp.shared.ApiCodes;
@@ -17,6 +18,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -29,6 +32,11 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private ApiResponse apiResponse;
+
+    private static String formatDate(Date date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return dateFormat.format(date); // Format as "yyyy-MM-dd HH:mm:ss"
+    }
 
     @Transactional
     public ApiResponse register(RegistrationDto registrationDto){
@@ -65,7 +73,7 @@ public class AuthService {
       return apiResponse;
   }
 
-  public ApiResponse login(LoginDto loginDto){
+  public JwtResponse login(LoginDto loginDto){
       var auth = authenticationManager.authenticate(
               new UsernamePasswordAuthenticationToken(
                       loginDto.getUsername(),
@@ -76,16 +84,15 @@ public class AuthService {
       var user = ((User) auth.getPrincipal());
       claims.put("fullName", user.fullName());
       var jwtToken = jwtService.generateToken(claims, user);
-      apiResponse = ApiResponse.builder()
+      Date expiry = jwtService.extractExpiration(jwtToken);
+      return JwtResponse.builder()
               .code(ApiCodes.SUCCESS.getCode())
               .message("Login successful")
-              .token(jwtToken)
+              .accessToken(jwtToken)
+              .tokenType("Bearer")
+              .tokenExpiresAt(expiry.getTime())
               .build();
 
-      return  apiResponse;
-
   }
-
-
 
 }

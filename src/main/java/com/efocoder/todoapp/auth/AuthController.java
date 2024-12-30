@@ -2,6 +2,7 @@ package com.efocoder.todoapp.auth;
 
 import com.efocoder.todoapp.auth.dto.LoginDto;
 import com.efocoder.todoapp.auth.dto.RegistrationDto;
+import com.efocoder.todoapp.jwt.JwtResponse;
 import com.efocoder.todoapp.shared.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse> login(@RequestBody @Valid LoginDto loginDto){
+    public ResponseEntity<JwtResponse> login(@RequestBody @Valid LoginDto loginDto){
         return ResponseEntity.ok(authService.login(loginDto));
     }
 }

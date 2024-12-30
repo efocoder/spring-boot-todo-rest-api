@@ -56,12 +56,16 @@ public class JwtService {
                 .map(GrantedAuthority::getAuthority)
                 .toList();
 
+        long currentTimeMillis = System.currentTimeMillis();
+        Date now = new Date(currentTimeMillis);
+        Date expirationDate = new Date(currentTimeMillis + jwtExpiration); // Add expiration time in milliseconds
+
         return Jwts
                 .builder()
                 .claims(extraClaims)
                 .subject(userDetails.getUsername())
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis()  +  jwtExpiration))
+                .issuedAt(now)
+                .expiration(expirationDate)
                 .claim("authorities", authorities)
                 .signWith(getSignInKey())
                 .compact();
@@ -76,7 +80,7 @@ public class JwtService {
         return extractExpiration(token).before(new Date());
     }
 
-    private Date extractExpiration(String token) {
+    public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
