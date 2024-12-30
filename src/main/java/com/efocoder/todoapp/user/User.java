@@ -3,6 +3,8 @@ package com.efocoder.todoapp.user;
 import com.efocoder.todoapp.role.Role;
 import com.efocoder.todoapp.shared.StatusConverter;
 import com.efocoder.todoapp.shared.StatusEnum;
+import com.efocoder.todoapp.task.Task;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -43,6 +45,7 @@ public class User implements UserDetails, Principal {
 
     private String lastName;
 
+    @JsonIgnore
     private String password;
 
     @CreatedDate
@@ -59,6 +62,10 @@ public class User implements UserDetails, Principal {
 
     @ManyToMany(fetch=FetchType.EAGER)
     private List<Role> roles;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Task> tasks;
 
 
     @Override

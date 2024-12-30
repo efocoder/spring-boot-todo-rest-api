@@ -3,8 +3,10 @@ package com.efocoder.todoapp.shared;
 public enum StatusEnum {
     ACTIVE(1),
     INACTIVE(2),
-    DELETED(0);
-
+    DELETED(0),
+    COMPLETED(3),
+    IN_PROGRESS(4),
+;
     private final int value;
 
 

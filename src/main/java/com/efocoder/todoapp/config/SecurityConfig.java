@@ -1,5 +1,6 @@
 package com.efocoder.todoapp.config;
 
+import com.efocoder.todoapp.jwt.CustomAuthenticationEntryPoint;
 import com.efocoder.todoapp.jwt.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -21,31 +22,35 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     private final AuthenticationProvider authenticationProvider;
     private final JwtFilter jwtFilter;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
-        http
-                .cors(Customizer.withDefaults())
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(req -> req.requestMatchers(
-                                        "/auth/**",
-                                        "/v2/api-docs",
-                                        "/v3/api-docs",
-                                        "/v3/api-docs/**",
-                                        "/swagger-resources",
-                                        "/swagger-resources/**",
-                                        "/configuration/ui",
-                                        "/configuration/security",
-                                        "swagger-ui/**",
-                                        "/webjars/**",
-                                        "/swagger-ui.html"
-                                ).permitAll()
-                                .anyRequest()
-                                .authenticated()
-                )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
-        return http.build();
-    }
+   @Bean
+   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+       http
+               .cors(Customizer.withDefaults())
+               .csrf(AbstractHttpConfigurer::disable)
+               .authorizeHttpRequests(req -> req.requestMatchers(
+                                       "/auth/**",
+                                       "/v2/api-docs",
+                                       "/v3/api-docs",
+                                       "/v3/api-docs/**",
+                                       "/swagger-resources",
+                                       "/swagger-resources/**",
+                                       "/configuration/ui",
+                                       "/configuration/security",
+                                       "swagger-ui/**",
+                                       "/webjars/**",
+                                       "/swagger-ui.html"
+                               ).permitAll()
+                               .anyRequest()
+                               .authenticated()
+               )
+               .exceptionHandling(ex -> ex
+                       .authenticationEntryPoint(customAuthenticationEntryPoint) // Set the custom entry point
+               )
+               .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+               .authenticationProvider(authenticationProvider)
+               .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+       return http.build();
+   }
 }
