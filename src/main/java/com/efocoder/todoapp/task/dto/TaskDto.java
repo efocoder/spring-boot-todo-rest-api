@@ -1,7 +1,9 @@
 package com.efocoder.todoapp.task.dto;
 
 import com.efocoder.todoapp.shared.StatusEnum;
+import com.efocoder.todoapp.shared.StatusEnumDeserializer;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +18,7 @@ public class TaskDto {
     private UUID id;
     private String title;
     private String description;
+    @JsonDeserialize(using = StatusEnumDeserializer.class)
     private StatusEnum status;
     @JsonProperty("created_date")
     private LocalDateTime createdDate;
