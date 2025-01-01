@@ -31,7 +31,6 @@ public class AuthService {
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    private ApiResponse apiResponse;
 
     private static String formatDate(Date date) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -49,7 +48,8 @@ public class AuthService {
       if(cUseEmail.isPresent()) throw new UniqueConstraintViolationException("Email already exists");
       if(cUseUsername.isPresent()) throw new UniqueConstraintViolationException("username already exists");
 
-      try{
+      ApiResponse apiResponse;
+        try{
              var user = User.builder()
                 .firstName(registrationDto.getFirstName())
                 .lastName(registrationDto.getLastName())

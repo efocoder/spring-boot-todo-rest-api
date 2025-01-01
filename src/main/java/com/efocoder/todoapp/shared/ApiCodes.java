@@ -8,8 +8,9 @@ import org.springframework.http.HttpStatus;
 public enum ApiCodes {
     INVALID_CREDENTIALS(20, HttpStatus.UNAUTHORIZED , "Invalid credentials"),
     INVALID_TOKEN(25, HttpStatus.UNAUTHORIZED , "Invalid access token"),
-    SUCCESS(1, HttpStatus.OK , "Successful"),
-    NO_BODY(0, HttpStatus.BAD_REQUEST , "No request body supplied"),
+    SUCCESS(1, HttpStatus.OK , "Request successful"),
+    FAILURE(0, HttpStatus.OK , "Request failed"),
+    NO_BODY(10, HttpStatus.BAD_REQUEST , "No request body supplied"),
     VALIDATION_ERROR(2, HttpStatus.BAD_REQUEST , "Validation error"),
     ROUTE_NOT_FOUND(21, HttpStatus.NOT_FOUND , "Route not found"),
     ;

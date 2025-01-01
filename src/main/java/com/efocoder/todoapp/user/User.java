@@ -63,7 +63,7 @@ public class User implements UserDetails, Principal {
     @ManyToMany(fetch=FetchType.EAGER)
     private List<Role> roles;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany( mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Task> tasks;
 

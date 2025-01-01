@@ -11,8 +11,8 @@ import java.util.Collection;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-public class ApiResponse {
+public class ApiResponse<T> {
     private Integer code;
     private String message;
-    private Collection<?> data;
+    private T data;
 }

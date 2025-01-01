@@ -2,6 +2,7 @@ package com.efocoder.todoapp.task;
 
 import com.efocoder.todoapp.shared.StatusEnum;
 import com.efocoder.todoapp.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -21,6 +22,7 @@ import java.util.UUID;
 @EntityListeners(AuditingEntityListener.class)
 public class Task {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     private String title;
@@ -29,7 +31,9 @@ public class Task {
 
     private StatusEnum status;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     private User user;
 
     @CreatedDate
