@@ -1,33 +1,39 @@
 package com.efocoder.todoapp.task;
 
+import com.efocoder.todoapp.exception.RecordNotFoundException;
 import com.efocoder.todoapp.shared.StatusEnum;
 import com.efocoder.todoapp.task.dto.CreateTaskDto;
 import com.efocoder.todoapp.task.dto.TaskDto;
+import com.efocoder.todoapp.task.dto.UpdateStatusDto;
+import com.efocoder.todoapp.task.dto.UpdateTaskDto;
 import com.efocoder.todoapp.user.User;
-import com.efocoder.todoapp.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class TaskService {
     private final TaskRepository taskRepository;
-    private final UserDetailsService userDetailsService;
-    private final UserRepository userRepository;
 
-
+    @Transactional(readOnly = true)
     public List<TaskDto> getAllTasks() {
-        var tasks =  taskRepository.findAll(StatusEnum.ACTIVE, getUser().getId());
+        var tasks =  taskRepository.findAll(StatusEnum.listStatuses, getUser().getId());
         return tasks.stream().map(this::mapToTaskDto).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public TaskDto findById(UUID id) {
+        var task = taskRepository.findById(id, StatusEnum.listStatuses, getUser().getId());
+        if (task == null) throw new RecordNotFoundException("Task with ID " + id + " not found.");
+        return mapToTaskDto(task);
     }
 
     @Transactional
@@ -49,6 +55,56 @@ public class TaskService {
         }
         return task;
     }
+    @Transactional
+    public TaskDto updateTask(UUID id, UpdateTaskDto updateTaskDto) {
+        var task = taskRepository.findById(id, StatusEnum.listStatuses, getUser().getId());
+        if (task == null) throw new RecordNotFoundException("Task with ID " + id + " not found.");
+
+        if(updateTaskDto.getTitle() != null) task.setTitle(updateTaskDto.getTitle());
+        if(updateTaskDto.getDescription() != null) task.setTitle(updateTaskDto.getDescription());
+        try {
+            taskRepository.save(task);
+            return mapToTaskDto(task);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Something went wrong while updating the task");
+        }
+    }
+
+
+    @Transactional
+    public void deleteTask(UUID id) {
+        var task = taskRepository.findById(id, StatusEnum.listStatuses, getUser().getId());
+        if (task == null) throw new RecordNotFoundException("Task with ID " + id + " not found.");
+        try {
+            task.setStatus(StatusEnum.DELETED);
+            taskRepository.save(task);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Something went wrong while deleting the task");
+        }
+
+    }
+
+    @Transactional
+    public TaskDto updateTaskStatus(UUID id, UpdateStatusDto statusDto){
+        var status = statusDto.getStatus();
+        System.out.println("Updating status: " + status);
+        if (status == StatusEnum.DELETED) throw new RuntimeException("You cannot set this status");
+
+        var task = taskRepository.findById(id, StatusEnum.listStatuses, getUser().getId());
+        if (task == null) throw new RecordNotFoundException("Task with ID " + id + " not found.");
+
+        try {
+            task.setStatus(status);
+            taskRepository.save(task);
+            return mapToTaskDto(task);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Something went wrong while deleting the task");
+        }
+    }
+
 
     private TaskDto mapToTaskDto(Task task){
         return TaskDto.builder()

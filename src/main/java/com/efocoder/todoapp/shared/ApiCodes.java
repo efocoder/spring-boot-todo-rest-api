@@ -13,6 +13,7 @@ public enum ApiCodes {
     NO_BODY(10, HttpStatus.BAD_REQUEST , "No request body supplied"),
     VALIDATION_ERROR(2, HttpStatus.BAD_REQUEST , "Validation error"),
     ROUTE_NOT_FOUND(21, HttpStatus.NOT_FOUND , "Route not found"),
+    RECORD_NOT_FOUND(22, HttpStatus.NOT_FOUND , "Record not found"),
     ;
 
     private final int code;

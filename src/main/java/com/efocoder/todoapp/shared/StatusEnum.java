@@ -1,12 +1,16 @@
 package com.efocoder.todoapp.shared;
 
+
+import java.util.Arrays;
+import java.util.List;
+
 public enum StatusEnum {
     ACTIVE(1),
-    INACTIVE(2),
-    DELETED(0),
-    COMPLETED(3),
-    IN_PROGRESS(4),
+    COMPLETED(2),
+    IN_PROGRESS(3),
+    DELETED(4),
 ;
+    public static final List<StatusEnum> listStatuses = Arrays.asList(StatusEnum.COMPLETED, StatusEnum.IN_PROGRESS, StatusEnum.ACTIVE);
     private final int value;
 
 

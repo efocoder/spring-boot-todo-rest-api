@@ -9,6 +9,9 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+
+import java.util.Objects;
 
 @RestControllerAdvice
 @Order(ExceptionHandlerOrder.GLOBAL)
@@ -42,6 +45,36 @@ public class GlobalExceptionHandler {
                         .message(ApiCodes.NO_BODY.getMessage())
                         .build());
     }
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ExceptionResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ExceptionResponse.builder()
+                        .code(ApiCodes.FAILURE.getCode())
+                        .message(String.format("Invalid parameter: '%s'. Expected type: '%s'.",
+                                ex.getValue(), Objects.requireNonNull(ex.getRequiredType()).getSimpleName()))
+                        .build());
+    }
+    @ExceptionHandler(RecordNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleRecordNotFoundException(RecordNotFoundException ex) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ExceptionResponse.builder()
+                        .code(ApiCodes.RECORD_NOT_FOUND.getCode())
+                        .message(ex.getMessage())
+                        .build());
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ExceptionResponse> handleException(RuntimeException exp){
+        exp.printStackTrace();
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ExceptionResponse.builder()
+                        .message(exp.getMessage())
+                        .build());
+    }
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ExceptionResponse> handleException(Exception exp){
